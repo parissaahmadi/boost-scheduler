@@ -1,4 +1,4 @@
-![ci](https://github.com/<USERNAME>/boost-scheduler/actions/workflows/ci.yml/badge.svg)
+![ci](https://github.com/parissaahmadi/boost-scheduler/actions/workflows/ci.yml/badge.svg)
 
 # boost-scheduler
 

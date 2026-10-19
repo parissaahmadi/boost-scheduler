@@ -1,3 +1,5 @@
+![ci](https://github.com/<USERNAME>/boost-scheduler/actions/workflows/ci.yml/badge.svg)
+
 # boost-scheduler
 
 A small, dependency-free Python library (plus a scripted simulation) that decides **when and which listing to "boost"** on a B2B marketplace for used industrial equipment (CNC machines, air compressors, forklifts...), while enforcing business rules around it.

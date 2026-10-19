@@ -17,8 +17,14 @@ H = timedelta(hours=1)
 
 
 def create(scheduler, actor=MANAGER_A, **overrides):
-    params = dict(machine_id="cnc-01", plan_name="standard", expert_ids=["nora", "omar"],
-                  start=T0, end=T0 + 4 * H, now=T0)
+    params = dict(
+        machine_id="cnc-01",
+        plan_name="standard",
+        expert_ids=["nora", "omar"],
+        start=T0,
+        end=T0 + 4 * H,
+        now=T0,
+    )
     params.update(overrides)
     return scheduler.create_run(actor, **params)
 
@@ -74,9 +80,17 @@ def test_second_run_for_same_car_needs_replace(scheduler):
 
 
 def test_replace_requires_authority_over_the_old_run(scheduler, world):
-    world.market.add_listing(Listing(
-        id="cnc-01-lena", machine_id="cnc-01", owner_id="lena", is_ours=True, quality=70.0,
-        last_boost_at=T0 - 5 * H, panel_id="panel-1"))
+    world.market.add_listing(
+        Listing(
+            id="cnc-01-lena",
+            machine_id="cnc-01",
+            owner_id="lena",
+            is_ours=True,
+            quality=70.0,
+            last_boost_at=T0 - 5 * H,
+            panel_id="panel-1",
+        )
+    )
     create(scheduler, actor=OWNER, expert_ids=["nora", "lena"])  # mixed-team run
     with pytest.raises(AuthorizationError):
         create(scheduler, actor=MANAGER_A, replace=True)
@@ -94,12 +108,12 @@ def test_run_activates_at_start_and_boosts_when_rivals_are_ahead(scheduler, worl
 
 
 def test_no_boost_until_enough_rivals_pass_us(scheduler, world):
-    create(scheduler)                       # "standard": 3 passes required
+    create(scheduler)  # "standard": 3 passes required
     first = scheduler.tick(T0)
-    assert len(first) == 1                  # initial position is far behind
+    assert len(first) == 1  # initial position is far behind
     later = T0 + timedelta(minutes=30)
     push_down(world.market, "cnc-01", later, times=2)
-    assert scheduler.tick(later) == []      # only 2 rivals ahead -> wait
+    assert scheduler.tick(later) == []  # only 2 rivals ahead -> wait
     push_down(world.market, "cnc-01", later + timedelta(minutes=1), times=3)
     assert len(scheduler.tick(later + timedelta(minutes=2))) == 1
 
@@ -110,7 +124,7 @@ def test_cooldown_prevents_back_to_back_boosts_of_one_listing(world):
     create(scheduler, expert_ids=["nora"], plan_name="aggressive")
     assert len(scheduler.tick(T0)) == 1
     push_down(world.market, "cnc-01", T0 + timedelta(minutes=1), times=2)
-    assert scheduler.tick(T0 + timedelta(minutes=2)) == []   # inside 5-min cooldown
+    assert scheduler.tick(T0 + timedelta(minutes=2)) == []  # inside 5-min cooldown
     assert len(scheduler.tick(T0 + timedelta(minutes=6))) == 1
 
 
@@ -123,7 +137,7 @@ def test_best_listing_is_chosen_among_candidates(scheduler):
 
 def test_wallet_exhaustion_pauses_the_run_via_system_actor(world):
     scheduler = Scheduler(market=world.market, experts=EXPERTS)
-    world.market.set_balance("panel-1", 10)       # exactly one boost for nora
+    world.market.set_balance("panel-1", 10)  # exactly one boost for nora
     create(scheduler, expert_ids=["nora"], plan_name="aggressive")
     assert len(scheduler.tick(T0)) == 1
     later = T0 + timedelta(minutes=10)
@@ -137,7 +151,7 @@ def test_wallet_exhaustion_pauses_the_run_via_system_actor(world):
 
 def test_low_balance_warning_is_emitted_once(world):
     scheduler = Scheduler(market=world.market, experts=EXPERTS)
-    world.market.set_balance("panel-2", 35)       # omar is paid by panel-2
+    world.market.set_balance("panel-2", 35)  # omar is paid by panel-2
     create(scheduler, plan_name="aggressive")
     scheduler.tick(T0)
     assert len(scheduler.audit.events(action="low_balance_warning")) == 1
@@ -224,8 +238,15 @@ def _simulate(seed: int):
     start = T0
     w = build_world(start, seed=seed)
     s = Scheduler(market=w.market, experts=EXPERTS)
-    s.create_run(MANAGER_A, machine_id="cnc-01", plan_name="standard", expert_ids=["nora", "omar"],
-                 start=start, end=start + 4 * H, now=start)
+    s.create_run(
+        MANAGER_A,
+        machine_id="cnc-01",
+        plan_name="standard",
+        expert_ids=["nora", "omar"],
+        start=start,
+        end=start + 4 * H,
+        now=start,
+    )
     out, now = [], start
     for _ in range(48):
         now += timedelta(minutes=5)

@@ -48,7 +48,7 @@ DEFAULT_PLANS = (
 @dataclass(frozen=True)
 class SchedulerConfig:
     min_boost_interval: timedelta = timedelta(minutes=5)  # per-listing cooldown
-    low_balance_threshold: int = 30                       # warn when wallet drops below
+    low_balance_threshold: int = 30  # warn when wallet drops below
     weights: ScoreWeights = ScoreWeights()
 
 
@@ -201,8 +201,9 @@ class Scheduler:
         run = self.get_run(run_id)
         self._authorize(actor, self._run_experts(run), now, "resume_run", run_id=run_id)
         if run.status is not RunStatus.PAUSED:
-            self._reject(actor, now, "resume_run", [f"run is {run.status.value}, not paused"],
-                         run_id=run_id)
+            self._reject(
+                actor, now, "resume_run", [f"run is {run.status.value}, not paused"], run_id=run_id
+            )
             raise PreconditionFailed([f"{run_id} is {run.status.value}, not paused"])
         if now >= run.end:
             self._reject(actor, now, "resume_run", ["window already elapsed"], run_id=run_id)
@@ -254,8 +255,16 @@ class Scheduler:
             if run.is_terminal:
                 continue
             if now >= run.end:
-                self._apply(run, RunStatus.COMPLETED, SYSTEM_ACTOR, now, "run_completed",
-                            reason="window_elapsed", boosts=run.boosts_done, spent=run.spent)
+                self._apply(
+                    run,
+                    RunStatus.COMPLETED,
+                    SYSTEM_ACTOR,
+                    now,
+                    "run_completed",
+                    reason="window_elapsed",
+                    boosts=run.boosts_done,
+                    spent=run.spent,
+                )
                 continue
             if run.status is RunStatus.SCHEDULED and now >= run.start:
                 self._apply(run, RunStatus.ACTIVE, SYSTEM_ACTOR, now, "run_started")
@@ -281,8 +290,7 @@ class Scheduler:
 
         # Cooldown: never boost the same listing twice in quick succession.
         eligible = [
-            lst for lst in ours
-            if now - lst.last_boost_at >= self._config.min_boost_interval
+            lst for lst in ours if now - lst.last_boost_at >= self._config.min_boost_interval
         ]
         ranked = rank_candidates(eligible, run.expert_ids, now, self._config.weights)
         if not ranked:
@@ -337,8 +345,15 @@ class Scheduler:
             )
 
     def _pause_for_funds(self, run: Run, expert: Expert, now: datetime) -> None:
-        self._apply(run, RunStatus.PAUSED, SYSTEM_ACTOR, now, "run_paused",
-                    reason="insufficient_funds", panel=expert.panel_id)
+        self._apply(
+            run,
+            RunStatus.PAUSED,
+            SYSTEM_ACTOR,
+            now,
+            "run_paused",
+            reason="insufficient_funds",
+            panel=expert.panel_id,
+        )
 
     # ------------------------------------------------------------------
     # Internals

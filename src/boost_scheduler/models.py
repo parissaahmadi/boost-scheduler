@@ -12,15 +12,15 @@ from enum import StrEnum
 
 
 class Role(StrEnum):
-    OWNER = "owner"      # may manage every team
+    OWNER = "owner"  # may manage every team
     MANAGER = "manager"  # may manage only the experts of their own team
-    SYSTEM = "system"    # the scheduler itself (automatic pauses, completion)
+    SYSTEM = "system"  # the scheduler itself (automatic pauses, completion)
 
 
 class RunStatus(StrEnum):
     SCHEDULED = "scheduled"  # created, window has not started yet
-    ACTIVE = "active"        # inside the window, boosting
-    PAUSED = "paused"        # temporarily stopped, can be resumed
+    ACTIVE = "active"  # inside the window, boosting
+    PAUSED = "paused"  # temporarily stopped, can be resumed
     CANCELLED = "cancelled"  # terminal: ended by a command
     COMPLETED = "completed"  # terminal: window elapsed
 
@@ -65,9 +65,9 @@ class Listing:
 
     id: str
     machine_id: str
-    owner_id: str              # expert id for ours, competitor id otherwise
+    owner_id: str  # expert id for ours, competitor id otherwise
     is_ours: bool
-    quality: float             # 0..100 listing-quality score
+    quality: float  # 0..100 listing-quality score
     last_boost_at: datetime
     views: int = 0
     calls: int = 0

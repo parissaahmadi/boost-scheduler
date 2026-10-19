@@ -177,8 +177,13 @@ world = build_world(now)
 scheduler = Scheduler(market=world.market, experts=EXPERTS)
 
 run = scheduler.create_run(
-    MANAGER_A, machine_id="cnc-01", plan_name="standard",
-    expert_ids=["nora", "omar"], start=now, end=now + timedelta(hours=4), now=now,
+    MANAGER_A,
+    machine_id="cnc-01",
+    plan_name="standard",
+    expert_ids=["nora", "omar"],
+    start=now,
+    end=now + timedelta(hours=4),
+    now=now,
 )
 for record in scheduler.tick(now):
     print(record.listing_id, record.rank_before, record.score)
